@@ -9,20 +9,20 @@
       content="Explore a delightful journey through global cuisines! Discover authentic recipes, culinary traditions, and mouthwatering dishes from diverse cultures around the world. Join us in celebrating the rich flavors and vibrant culinary heritage that unite us all."
     />
 
-    <link rel="stylesheet" href="css/all.min.css" />
-    <link rel="stylesheet" href="./css/output.css" />
+    <link rel="stylesheet" href="src/css/all.min.css" />
+    <link rel="stylesheet" href="src/css/output.css" />
   </head>
   <body class="bg-main-color overflow-hidden">
     <!-- loading-screen -->
     <div
-      class="loading-screen flex min-h-screen w-full bg-black items-center justify-center fixed z-[9999] top-0 left-0"
+      class="loading-screen flex min-h-screen w-full bg-black items-center justify-center fixed z-[9999] bottom-0 top-0 left-0"
     >
       <span class="loader"></span>
     </div>
 
     <!-- side bar -->
     <aside class="flex fixed top-0 z-[999]">
-      <div id="sideBarLayer" class="hidden">
+      <div id="sideBarLayer" class="hidden overflow-hidden">
         <div
           id="sideBar"
           class="min-h-screen bg-main-color p-6 flex flex-col justify-between text-gray-50 whitespace-nowrap"
@@ -48,7 +48,7 @@
         id="header"
         class="min-h-screen bg-white flex flex-col justify-between items-center py-6 px-2"
       >
-        <img src="images/logo.png" alt="" class="size-14 object-cover" />
+        <img src="src/images/logo.png" alt="" class="size-14 object-cover" />
         <i class="fa-solid fa-bars fa-2xl cursor-pointer" id="openBtn"></i>
         <i
           class="fa-solid fa-close fa-2xl hidden cursor-pointer"
@@ -64,14 +64,14 @@
     <section class="min-h-screen">
       <!-- inner loading screen -->
       <div
-        class="inner-loading-screen flex min-h-screen w-full bg-black items-center justify-center hidden fixed z-[99] top-0 left-0"
+        class="inner-loading-screen min-h-screen w-full bg-black items-center justify-center hidden fixed z-[99] top-0 left-0"
       >
         <span class="loader"></span>
       </div>
 
       <!-- search inputs -->
       <div
-        class="w-[75%] mx-auto grid-cols-1 md:grid-cols-2 justify-center gap-5 py-6 grid hidden"
+        class="w-[75%] ms-[80px] sm:mx-auto grid-cols-1 md:grid-cols-2 justify-center gap-5 py-6 grid hidden"
         id="searchContainer"
       >
         <input
@@ -89,11 +89,11 @@
         />
       </div>
       <!-- content  -->
-      <div class="container sm:w-[85%] md:w-[90%] min-h-screen">
-        <div id="dataRow" class="min-h-screen py-12 ps-10"></div>
+      <div class="container sm:w-[90%] md:w-[95%] min-h-screen">
+        <div id="dataRow" class="min-h-screen py-12"></div>
       </div>
     </section>
-    <script src="js/jquery.min.js"></script>
-    <script src="js/index.js"></script>
+    <script src="src/js/jquery.min.js"></script>
+    <script src="src/js/index.js"></script>
   </body>
 </html>

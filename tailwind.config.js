@@ -1,6 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./src/**/*.{html,js}"],
+  content: [
+    "./src/**/*.{html,js}", // Search within the 'src' folder for .html and .js files
+    "./*.html",
+  ],
   theme: {
     container: {
       center: true,

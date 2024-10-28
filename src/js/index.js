@@ -6,26 +6,32 @@ $(window).on("load", function () {
   $("body").removeClass("overflow-hidden");
 });
 // inner loading screen
-function showingLoadingScreen() {
-  $(".inner-loading-screen").removeClass("hidden");
+async function showingLoadingScreen() {
+  console.log("Showing loading screen");
+  $(".inner-loading-screen").removeClass("hidden").css("display", "flex");
+
   $("body").addClass("overflow-hidden");
 }
 
-function hiddingLoadingScreen() {
-  $(".inner-loading-screen").addClass("hidden");
+async function hiddingLoadingScreen() {
+  console.log("Hidding loading screen");
+  $(".inner-loading-screen").fadeOut(500, function () {
+    $(".inner-loading-screen").addClass("hidden").css("display", "none");
+  });
   $("body").removeClass("overflow-hidden");
 }
 //NAVBAR
 $("#openBtn").on("click", function () {
   $("#sideBarLayer").animate({ width: "toggle" }, 400);
-  $("#openBtn").toggleClass("hidden");
-  $("#closeBtn").toggleClass("hidden");
+  $("#openBtn").addClass("hidden");
+  $("#closeBtn").removeClass("hidden");
 });
 $("#closeBtn").on("click", function () {
   $("#sideBarLayer").animate({ width: "toggle" }, 400);
-  $("#closeBtn").toggleClass("hidden");
-  $("#openBtn").toggleClass("hidden");
+  $("#openBtn").removeClass("hidden");
+  $("#closeBtn").addClass("hidden");
 });
+
 // search by Name related variables
 let searchByName = $("#searchByName");
 let searchByLetter = $("#searchByLetter");
@@ -50,7 +56,7 @@ async function fetchByLetter(letter) {
   console.log(mealsList);
 }
 searchByLetter.on("input", async function () {
-  showingLoadingScreen();
+  await showingLoadingScreen();
 
   let mealLetter = searchByLetter.val();
 
@@ -73,15 +79,20 @@ searchByLetter.on("input", async function () {
 // search by name
 $("#search").on("click", function () {
   $("#searchContainer").removeClass("hidden");
+  $("#dataRow").empty();
   $("#sideBarLayer").animate({ width: "toggle" }, 400);
+  $("#openBtn").removeClass("hidden");
+  $("#closeBtn").addClass("hidden");
 });
 $("#search")
   .siblings()
   .on("click", function () {
     $("#searchContainer").addClass("hidden");
+    $("#openBtn").removeClass("hidden");
+    $("#closeBtn").addClass("hidden");
   });
 searchByName.on("input", async function () {
-  showingLoadingScreen();
+  await showingLoadingScreen();
 
   let mealName = searchByName.val();
   await fetchByName(mealName);
@@ -89,6 +100,7 @@ searchByName.on("input", async function () {
     displayMeal(mealsList);
     hiddingLoadingScreen();
   }
+  hiddingLoadingScreen();
 });
 
 async function fetchByName(mealName) {
@@ -107,16 +119,16 @@ async function defaultMeals() {
 defaultMeals();
 
 function displayMeal(array) {
+  mealGrid();
   let box = "";
-  $("#dataRow").html(
-    "<div class='grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 ' id='mealsGrid'></div>"
-  );
+
   let counter = array.length;
   if (array.length > 20) {
     counter = 20;
   }
   for (let i = 0; i < counter; i++) {
     box += `
+    
      <div class="meal group card">
   <img
     src="${array[i].strMealThumb}"
@@ -132,11 +144,16 @@ function displayMeal(array) {
   }
   $("#mealsGrid").html(box);
 }
-
+// adding grid layout for meals
+async function mealGrid() {
+  $("#dataRow").html(
+    '<div class="grid ms-[80px] sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 "id="mealsGrid"></div>'
+  );
+}
 // finding meals base on Categories
 $("#category").on("click", async function () {
   $("#sideBarLayer").animate({ width: "toggle" }, 400);
-  showingLoadingScreen();
+  await showingLoadingScreen();
 
   await fetchByCategory();
   displayCategory();
@@ -152,13 +169,11 @@ async function fetchByCategory() {
 }
 
 function displayCategory() {
+  mealGrid();
   let box = "";
-  $("#dataRow").html(
-    "<div class='grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 ' id='mealsGrid'></div>"
-  );
+
   categories.forEach((cat) => {
-    box += `
-    <div class="card  category group">
+    box += `<div class="card  category group">
   <img
     src="${cat.strCategoryThumb}"
     alt="yrstur pie"
@@ -168,15 +183,14 @@ function displayCategory() {
     <h3 class="title text-titleSize ">${cat.strCategory}</h3>
     <p>${cat.strCategoryDescription.split(" ").splice(0, 20).join(" ")}</p>
   </div>
-</div>
-`;
+</div>`;
   });
 
   $("#mealsGrid").html(box);
 }
 
 $("#dataRow").on("click", ".category", async function (e) {
-  showingLoadingScreen();
+  await showingLoadingScreen();
 
   currentCategoryName = $(e.currentTarget).find("h3").text();
   await fetchClickedItem("c", currentCategoryName);
@@ -196,7 +210,7 @@ async function fetchClickedItem(letter, item) {
 ///////////////
 ///////////////
 $("#dataRow").on("click", ".meal", async function (e) {
-  showingLoadingScreen();
+  await showingLoadingScreen();
 
   currentMeal = $(e.currentTarget).find("h3").text();
   await fetchByName(currentMeal);
@@ -206,6 +220,7 @@ $("#dataRow").on("click", ".meal", async function (e) {
 });
 function displayInstruction() {
   // Create a variable to store ingredients dynamically
+
   let ingredients = "";
 
   // Loop through the mealsList[0] object to find ingredient and measure pairs
@@ -221,7 +236,7 @@ function displayInstruction() {
 
   let box = `
   <div
-            class="grid w-[85%] mx-auto sm:grid-cols-1 md:grid-cols-[30%_minmax(0,1fr)] gap-6"
+            class="grid  mx-auto sm:grid-cols-1 md:grid-cols-[30%_minmax(0,1fr)] gap-6 ms-[80px]"
           >
             <div class="image-box">
               <img
@@ -263,16 +278,8 @@ function displayInstruction() {
                 <span class="font-bold pe-2">Tages:</span>
               </h3>
               <div class="buttons">
-                <a
-                  href="${mealsList[0].strSource}"
-                  class="bg-green-600 hover:bg-green-700"
-                  >Source</a
-                >
-                <a
-                  href="${mealsList[0].strYoutube}"
-                  class="bg-red-600 hover:bg-red-700"
-                  >Youtube</a
-                >
+                <a href="${mealsList[0].strSource}" target="_blank" class="bg-green-600 hover:bg-green-700">Source</a>
+        <a href="${mealsList[0].strYoutube}" target="_blank" class="bg-red-600 hover:bg-red-700">Youtube</a>
               </div>
             </div>
           </div>
@@ -288,7 +295,7 @@ function displayInstruction() {
 // displaying areas on clicking the area link
 $("#area").on("click", async function () {
   $("#sideBarLayer").animate({ width: "toggle" }, 400);
-  showingLoadingScreen();
+  await showingLoadingScreen();
 
   await fetchList();
   displayArea();
@@ -296,7 +303,7 @@ $("#area").on("click", async function () {
 });
 // displaying meals on clicking  certain area(country)
 $("#dataRow").on("click", ".country", async function (e) {
-  showingLoadingScreen();
+  await showingLoadingScreen();
 
   currentAreaName = $(e.currentTarget).find("h3").text();
   await fetchClickedItem("a", currentAreaName);
@@ -313,16 +320,15 @@ async function fetchList() {
 }
 
 function displayArea() {
+  mealGrid();
   let box = "";
-  $("#dataRow").html(
-    "<div class='grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 ' id='mealsGrid'></div>"
-  );
+
   areas.forEach((area) => {
     box += `
-     <div class="country cursor-pointer">
-            <i class="fa-solid fa-house-laptop fa-4x"></i>
-            <h3 class="title-country">${area.strArea}</h3>
-          </div>
+       <div class="country cursor-pointer">
+        <i class="fa-solid fa-house-laptop fa-4x"></i>
+        <h3 class="title-country">${area.strArea}</h3>
+      </div>
 `;
   });
 
@@ -332,14 +338,14 @@ function displayArea() {
 // dispalying meal based on ingredients
 $("#ingredients").on("click", async function () {
   $("#sideBarLayer").animate({ width: "toggle" }, 400);
-  showingLoadingScreen();
+  await showingLoadingScreen();
 
   await fetchIngredients();
   displayIngredients();
   hiddingLoadingScreen();
 });
 $("#dataRow").on("click", ".ingredient", async function (e) {
-  showingLoadingScreen();
+  await showingLoadingScreen();
 
   currentIngredient = $(e.currentTarget).find("h3").text();
   await fetchClickedItem("i", currentIngredient);
@@ -355,16 +361,15 @@ async function fetchIngredients() {
   ingredients = data.meals;
 }
 function displayIngredients() {
+  mealGrid();
   let box = "";
-  $("#dataRow").html(
-    "<div class='grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 ' id='mealsGrid'></div>"
-  );
+
   for (let i = 0; i < 20; i++) {
     box += `
    <div class="ingredient cursor-pointer text-white text-center">
           <i class="fa-solid fa-drumstick-bite fa-4x"></i>
           <h3 class="title-country mb-2">${ingredients[i].strIngredient}</h3>
-           <p">${ingredients[i].strDescription
+           <p class="p-3">${ingredients[i].strDescription
              .split(" ")
              .splice(0, 20)
              .join(" ")}</p>
@@ -378,174 +383,144 @@ function displayIngredients() {
 // displaying contact
 
 $("#contact").on("click", function () {
-  $("#sideBarLayer").animate({ width: "toggle" }, 400);
-  let box = `
-   <form id="myForm" class="min-h-screen flex center flex-col">
-            <div
-              class="w-[75%] mx-auto grid gap-6 grid-cols-1 justify-center items-center content-center md:grid-cols-2"
-            >
-              <div>
-                <input
-                  id="name"
-                  class="custom-input w-full border p-2"
-                  type="text"
-                  placeholder="Enter Your Name"
-                />
-                <p class="text-red-500 hidden"></p>
-              </div>
-              <div>
-                <input
-                  id="email"
-                  class="custom-input w-full border p-2"
-                  type="email"
-                  placeholder="Enter Your Email"
-                />
-                <p class="text-red-500 hidden"></p>
-              </div>
-              <div>
-                <input
-                  id="phone"
-                  class="custom-input w-full border p-2"
-                  type="number"
-                  placeholder="Enter Your Phone"
-                />
-                <p class="text-red-500 hidden"></p>
-              </div>
-              <div>
-                <input
-                  id="age"
-                  class="custom-input w-full border p-2"
-                  type="text"
-                  placeholder="Enter Your Age"
-                />
-                <p class="text-red-500 hidden"></p>
-              </div>
-              <div>
-                <input
-                  id="password"
-                  class="custom-input w-full border p-2"
-                  type="password"
-                  placeholder="Enter Your Password"
-                />
-                <p class="text-red-500 hidden"></p>
-              </div>
-              <div>
-                <input
-                  id="repassword"
-                  class="custom-input w-full border p-2"
-                  type="password"
-                  placeholder="Repassword"
-                />
-                <p class="text-red-500 hidden"></p>
-              </div>
-            </div>
-            <button
-              id="submitButton"
-              disabled
-              class="border border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-semibold px-2 py-[6px] mt-4 rounded center opacity-50"
-            >
-              Submit
-            </button>
-          </form>
-  
-  `;
-  $("#dataRow").html(box);
+  displayContact();
 });
 
-// Contact validation
-let form = $("#myForm");
-let nameInput = $("#name");
-let emailInput = $("#email");
-let phoneInput = $("#phone");
-let ageInput = $("#age");
-let passwordInput = $("#password");
-let repasswordInput = $("#repassword");
-let submitButton = $("#submitButton");
-
-let nameRegex = /^[A-Za-z ]{2,}$/;
-let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-let phoneRegex = /^\d{10}$/;
-let ageRegex = /^\d+$/;
-let passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
-
-function checkValidity() {
-  let isValid = true;
-
-  if (!nameRegex.test(nameInput.val())) {
-    nameInput
-      .next("p")
-      .text("Please enter a valid name.")
-      .removeClass("hidden");
-    isValid = false;
-  } else {
-    nameInput.next("p").addClass("hidden");
-  }
-
-  if (!emailRegex.test(emailInput.val())) {
-    emailInput
-      .next("p")
-      .text("Please enter a valid email.")
-      .removeClass("hidden");
-    isValid = false;
-  } else {
-    emailInput.next("p").addClass("hidden");
-  }
-
-  if (!phoneRegex.test(phoneInput.val())) {
-    phoneInput
-      .next("p")
-      .text("Please enter a valid phone number.")
-      .removeClass("hidden");
-    isValid = false;
-  } else {
-    phoneInput.next("p").addClass("hidden");
-  }
-
-  if (!ageRegex.test(ageInput.val())) {
-    ageInput.next("p").text("Please enter a valid age.").removeClass("hidden");
-    isValid = false;
-  } else {
-    ageInput.next("p").addClass("hidden");
-  }
-
-  if (!passwordRegex.test(passwordInput.val())) {
-    passwordInput
-      .next("p")
-      .text(
-        "Password must be at least 6 characters long and include at least one letter and one number."
-      )
-      .removeClass("hidden");
-    isValid = false;
-  } else {
-    passwordInput.next("p").addClass("hidden");
-  }
-
-  if (passwordInput.val() !== repasswordInput.val()) {
-    repasswordInput
-      .next("p")
-      .text("Passwords do not match.")
-      .removeClass("hidden");
-    isValid = false;
-  } else {
-    repasswordInput.next("p").addClass("hidden");
-  }
-
-  if (isValid) {
-    submitButton
-      .prop("disabled", false)
-      .removeClass("opacity-50")
-      .addClass("opacity-100");
-  } else {
-    submitButton
-      .prop("disabled", true)
-      .removeClass("opacity-100")
-      .addClass("opacity-50");
-  }
+function displayContact() {
+  $("#sideBarLayer").animate({ width: "toggle" }, 400);
+  let box = `
+  <form id="myForm" class="min-h-screen ms-[75px] mx-auto flex center flex-col">
+      <div class="w-[75%] mx-auto grid gap-6 grid-cols-1 justify-center items-center content-center md:grid-cols-2">
+          <div>
+              <input id="name" class="custom-input w-full border p-2" type="text" placeholder="Enter Your Name" />
+              <p class="text-red-500 hidden"></p>
+          </div>
+          <div>
+              <input id="email" class="custom-input w-full border p-2" type="email" placeholder="Enter Your Email" />
+              <p class="text-red-500 hidden"></p>
+          </div>
+          <div>
+              <input id="phone" class="custom-input w-full border p-2" type="text" placeholder="Enter Your Phone" />
+              <p class="text-red-500 hidden"></p>
+          </div>
+          <div>
+              <input id="age" class="custom-input w-full border p-2" type="text" placeholder="Enter Your Age" />
+              <p class="text-red-500 hidden"></p>
+          </div>
+          <div>
+              <input id="password" class="custom-input w-full border p-2" type="password" placeholder="Enter Your Password" />
+              <p class="text-red-500 hidden"></p>
+          </div>
+          <div>
+              <input id="repassword" class="custom-input w-full border p-2" type="password" placeholder="Repassword" />
+              <p class="text-red-500 hidden"></p>
+          </div>
+      </div>
+      <button id="submitButton" disabled class="border border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-semibold px-2 py-[6px] mt-4 rounded center opacity-50">
+          Submit
+      </button>
+  </form>
+  `;
+  $("#dataRow").html(box);
+  attachValidation();
 }
 
-nameInput.on("input", checkValidity);
-emailInput.on("input", checkValidity);
-phoneInput.on("input", checkValidity);
-ageInput.on("input", checkValidity);
-passwordInput.on("input", checkValidity);
-repasswordInput.on("input", checkValidity);
+function attachValidation() {
+  let nameInput = $("#name");
+  let emailInput = $("#email");
+  let phoneInput = $("#phone");
+  let ageInput = $("#age");
+  let passwordInput = $("#password");
+  let repasswordInput = $("#repassword");
+  let submitButton = $("#submitButton");
+
+  let nameRegex = /^[A-Za-z ]{2,}$/;
+  let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  let phoneRegex = /^\d{10}$/; // Adjust according to your needs
+  let ageRegex = /^(1[01][0-9]|[1-9]?[0-9])$/; // Age between 0-120
+  let passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/;
+
+  function checkValidity() {
+    let isValid = true;
+
+    if (!nameRegex.test(nameInput.val())) {
+      nameInput
+        .next("p")
+        .text("Please enter a valid name.")
+        .removeClass("hidden");
+      isValid = false;
+    } else {
+      nameInput.next("p").addClass("hidden");
+    }
+
+    if (!emailRegex.test(emailInput.val())) {
+      emailInput
+        .next("p")
+        .text("Please enter a valid email.")
+        .removeClass("hidden");
+      isValid = false;
+    } else {
+      emailInput.next("p").addClass("hidden");
+    }
+
+    if (!phoneRegex.test(phoneInput.val())) {
+      phoneInput
+        .next("p")
+        .text("Please enter a valid phone number.")
+        .removeClass("hidden");
+      isValid = false;
+    } else {
+      phoneInput.next("p").addClass("hidden");
+    }
+
+    if (!ageRegex.test(ageInput.val())) {
+      ageInput
+        .next("p")
+        .text("Please enter a valid age (1-120).")
+        .removeClass("hidden");
+      isValid = false;
+    } else {
+      ageInput.next("p").addClass("hidden");
+    }
+
+    if (!passwordRegex.test(passwordInput.val())) {
+      passwordInput
+        .next("p")
+        .text(
+          "Password must be at least 6 characters long and include at least one letter and one number."
+        )
+        .removeClass("hidden");
+      isValid = false;
+    } else {
+      passwordInput.next("p").addClass("hidden");
+    }
+
+    if (passwordInput.val() !== repasswordInput.val()) {
+      repasswordInput
+        .next("p")
+        .text("Passwords do not match.")
+        .removeClass("hidden");
+      isValid = false;
+    } else {
+      repasswordInput.next("p").addClass("hidden");
+    }
+
+    submitButton
+      .prop("disabled", !isValid)
+      .toggleClass("opacity-50", !isValid)
+      .toggleClass("opacity-100", isValid);
+  }
+
+  nameInput.on("input", checkValidity);
+  emailInput.on("input", checkValidity);
+  phoneInput.on("input", checkValidity);
+  ageInput.on("input", checkValidity);
+  passwordInput.on("input", checkValidity);
+  repasswordInput.on("input", checkValidity);
+
+  submitButton.on("click", function () {
+    if (submitButton.is(":disabled")) {
+      alert("Please fill out the form correctly before submitting.");
+    }
+  });
+}

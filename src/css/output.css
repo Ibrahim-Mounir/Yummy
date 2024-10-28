@@ -701,6 +701,10 @@ aside #sideBarLinks li {
   position: relative;
 }
 
+.bottom-0 {
+  bottom: 0px;
+}
+
 .left-0 {
   left: 0px;
 }
@@ -736,6 +740,14 @@ aside #sideBarLinks li {
 
 .mb-4 {
   margin-bottom: 1rem;
+}
+
+.ms-\[75px\] {
+  margin-inline-start: 75px;
+}
+
+.ms-\[80px\] {
+  margin-inline-start: 80px;
 }
 
 .mt-2 {
@@ -789,10 +801,6 @@ aside #sideBarLinks li {
 
 .w-\[75\%\] {
   width: 75%;
-}
-
-.w-\[85\%\] {
-  width: 85%;
 }
 
 .w-full {
@@ -910,6 +918,10 @@ aside #sideBarLinks li {
   padding: 0.5rem;
 }
 
+.p-3 {
+  padding: 0.75rem;
+}
+
 .p-6 {
   padding: 1.5rem;
 }
@@ -936,10 +948,6 @@ aside #sideBarLinks li {
 
 .pe-2 {
   padding-inline-end: 0.5rem;
-}
-
-.ps-10 {
-  padding-inline-start: 2.5rem;
 }
 
 .text-center {
@@ -1116,8 +1124,13 @@ aside #sideBarLinks li {
 }
 
 @media (min-width: 640px) {
-  .sm\:w-\[85\%\] {
-    width: 85%;
+  .sm\:mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .sm\:w-\[90\%\] {
+    width: 90%;
   }
 
   .sm\:grid-cols-1 {
@@ -1126,8 +1139,8 @@ aside #sideBarLinks li {
 }
 
 @media (min-width: 768px) {
-  .md\:w-\[90\%\] {
-    width: 90%;
+  .md\:w-\[95\%\] {
+    width: 95%;
   }
 
   .md\:grid-cols-2 {
